@@ -38,83 +38,55 @@ ntime={
     "S":16
 }
 
-# calculate note frequencies
-A_freq = 440
-Csh_freq = A_freq * 2 ** (4 / 12)
-E_freq = A_freq * 2 ** (7 / 12)
-
-
+#replace with file name
 sheet=pd.read_excel("UTS.xlsx")
-#print(sheet)
 
-# get timesteps for each sample, T is note duration in seconds
+
 sample_rate = 44100
-#bpm  
-T = 0.25
-t = np.linspace(0, T, int(T * sample_rate), False)
 np.set_printoptions(threshold=sys.maxsize)
 
   
-# For each row use t=np.linspace to create sample starting from beat to beat end. coverted to seconds using    beatstart,beat+beattime,(lower/time)*(bpm/60)
-#For each row add beat counter. Start at 0. Set beat to ltime[-1] + beat[-1]
-#insert row before every row where v>0. Note = R, Time = SH2B
-
-#print(sheet.index)
-#print(sheet.columns)
-#r=sheet.at[0,"Time"]
-#lambda x: sheet.at[x-1,"Lower"]/sheet.at[x-1,"Time"] (sheet.Index)
+#add length and start of beat to table
 ltime=list(map((lambda x: sheet.at[x,"Lower"]/ntime[sheet.at[x,"Time"]]),sheet.index))
-#print(ltime)
 beatstart=list(map((lambda a:lambda v:a(a,v))(lambda s,x:0 if x==0 else ltime[x-1]+s(s,x-1)),sheet.index))
-
-#beats=list(map((lambda a:lambda v:a(a,v))(lambda s,x:0 if x==0 else sheet.at[x-1,"Lower"]/ntime[sheet.at[x-1,"Time"]]+s(s,x-1)),sheet.index))
-#print(sheet.loc[sheet["V"] > 0])
 sheet.insert(len(sheet.columns),"ltime",ltime) 
 sheet.insert(len(sheet.columns),"beatstart",beatstart)
 
+#add end of beat to table
 beatend=list(map((lambda x: beatstart[x]+ltime[x] if x==sheet.index.max() else beatstart[x+1] if sheet.at[x+1,"V"]<=0 else beatstart[x+1] - 1/64),sheet.index))
 sheet.insert(len(sheet.columns),"beatend",beatend)
-tcounter=list(map((lambda x: beatstart[x]/(sheet.at[x,"Bpm"]/60) ),sheet.index))
+
+#tcounter=list(map((lambda x: beatstart[x]/(sheet.at[x,"Bpm"]/60) ),sheet.index))
+#sheet.insert(len(sheet.columns),"tcounter",tcounter)
+
+#converts beats into seconds
 newt=list(map((lambda x: np.linspace(beatstart[x]/(sheet.at[x,"Bpm"]/60) ,beatend[x]/(sheet.at[x,"Bpm"]/60) ,int(sample_rate*(     (beatend[x]-beatstart[x])/(sheet.at[x,"Bpm"]/60)            )   )) ) ,sheet.index))
-sheet.insert(len(sheet.columns),"tcounter",tcounter)
-#print(newt)
+
 
 print(sheet)
-# generate sine wave notes
-#A_note = np.sin(A_freq * t * 2 * np.pi)
-#Csh_note = np.sin(Csh_freq * t * 2 * np.pi)
-#E_note = np.sin(E_freq * t * 2 * np.pi)
-A_note = np.sin(notes["AN"][2]*t*2*np.pi)
-Csh_note = np.sin(notes["CS"][2]*t*2*np.pi)
-E_note = np.sin(notes["EN"][2] *t*2*np.pi)
+
+
+
+# convert sheet[Notes]=xy into note[x][y] format
 noteconv=  list(map((lambda x: re.split(r'(\d)',sheet.at[x,"Note"])),sheet.index))
-a=noteconv[0][0]
-b=noteconv[0][1]
-#print(b)
-#print(notes[a][int(b)])
 Aud= list(map((lambda x: notes[noteconv[x][0]][int(noteconv[x][1])] ),sheet.index))
+
+
+#generate sine wave notes
 A2=list(map((lambda x: np.sin(Aud[x]*newt[x]*2*np.pi) ),sheet.index))
-#print(A2)
-#print(A_note)
 
-# concatenate notes
-audio = np.hstack((A_note, Csh_note, E_note))
-a22=np.hstack(A2)
-#print(audio)
+
+
+
+
 # normalize to 16-bit range
-audio *= 32767 / np.max(np.abs(audio))
+a22=np.hstack(A2)
 a22 *= 32767 / np.max(np.abs(a22))
-# convert to 16-bit data
-audio = audio.astype(np.int16)
-a22 = a22.astype(np.int16)
-# start playback
-#play_obj = sa.play_buffer(audio, 1, 2, sample_rate)
 
-# wait for playback to finish before exiting
-#play_obj.wait_done()
+# convert to 16-bit data
+a22 = a22.astype(np.int16)
 
 
 play_obj = sa.play_buffer(a22, 1, 2, sample_rate)
 
-# wait for playback to finish before exiting
 play_obj.wait_done()
