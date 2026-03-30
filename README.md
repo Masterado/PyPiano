@@ -1,8 +1,9 @@
 # PyPiano
+WARNING: Volume control not implemented. Low volume recommended
+
 Piano built using Python taking sheet music turned into Excel sheet as input.
 Uses pandas to store excel sheet as data that gets transformed into an audio object using simpleaudio.
 Running the application opens a window that will prompt for the filename of an .xlsx file and a play button.
-
 
 
 Sheet Format
