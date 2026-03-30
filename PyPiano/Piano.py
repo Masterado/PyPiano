@@ -6,7 +6,7 @@ import re
 notes={
     "R": [0,0],
     "AF":(lambda x:440*2**((x*4/7)/12))( np.arange(-22,42,21)),
-    "AN":(lambda x:440*2**((x*4/7)/12))( np.arange(-21,43,21)),
+    "AN":(lambda x:440*2**((x*4/7)/12))( np.arange(-21,64,21)),
     "AS":(lambda x:440*2**((x*4/7)/12))( np.arange(-20,44,21)),
     "BF":(lambda x:440*2**((x*4/7)/12))( np.arange(-19,45,21)),
     "BN":(lambda x:440*2**((x*4/7)/12))( np.arange(-18,46,21)),
@@ -35,11 +35,19 @@ ntime={
     "W":1,
     "E":8,
     "T":32,
-    "S":16
+    "S":16,
+    "Q-":4/1.5,
+    "H-":2/1.5,
+    "W-":1/1.5,
+    "E-":8/1.5,
+    "T-":32/1.5,
+    "S-":16/1.5,
+    #pause before a new note
+    "P":64
 }
 
 #replace with file name
-sheet=pd.read_excel("UTS.xlsx")
+sheet=pd.read_excel("WA.xlsx")
 
 
 sample_rate = 44100
@@ -53,7 +61,7 @@ sheet.insert(len(sheet.columns),"ltime",ltime)
 sheet.insert(len(sheet.columns),"beatstart",beatstart)
 
 #add end of beat to table
-beatend=list(map((lambda x: beatstart[x]+ltime[x] if x==sheet.index.max() else beatstart[x+1] if sheet.at[x+1,"V"]<=0 else beatstart[x+1] - 1/64),sheet.index))
+beatend=list(map((lambda x: beatstart[x]+ltime[x] if x==sheet.index.max() else beatstart[x+1] if sheet.at[x+1,"V"]<=0 else beatstart[x+1] - 1/ntime["P"]),sheet.index))
 sheet.insert(len(sheet.columns),"beatend",beatend)
 
 #tcounter=list(map((lambda x: beatstart[x]/(sheet.at[x,"Bpm"]/60) ),sheet.index))
