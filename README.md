@@ -8,6 +8,7 @@ Running the application opens a window that will prompt for the filename of an .
 
 Sheet Format
 
+
 Columns: Note, Time, Measure, V, Bpm, Upper, Lower
 
 Note: Note and octave. Octaves are represented by an array and the number found in the excel sheet corrsponds to the index.  Currently the range of Aflat with a frequency of 220 through A Natural with a frequency of 3520 (notes["AF"][0]) through (notes["AN"][4]). Rests are represented by R0
@@ -25,7 +26,10 @@ Lower: Lower half of time signature (used to calculate length in seconds of beat
 V: Denotes volume. Values 0 or less are silent -1 is used to denote tied notes and 0 represents rests.
 
 
+
+
 Current Samples
+
 
 Shave and a haircut 2 bits
 
