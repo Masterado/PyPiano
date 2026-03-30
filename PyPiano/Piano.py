@@ -3,7 +3,9 @@ import simpleaudio as sa
 import sys
 import pandas as pd
 import re
-
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 150)
 np.set_printoptions(threshold=sys.maxsize)
 class Piano():
     def __init__(self, filename):
@@ -51,7 +53,7 @@ class Piano():
             "T-":32/1.5,
             "S-":16/1.5,
             #pause before a new note
-            "P":64
+           # "P":8
         }
 
     def sheetgen(self):
@@ -70,11 +72,11 @@ class Piano():
         self.sheet.insert(len(self.sheet.columns),"beatstart",beatstart)
 
         #add end of beat to table
-        beatend=list(map((lambda x: beatstart[x]+ltime[x] if x==self.sheet.index.max() else beatstart[x+1] if self.sheet.at[x+1,"V"]<=0 else beatstart[x+1] - 1/self.ntime["P"]),self.sheet.index))
+        beatend=list(map((lambda x: beatstart[x]+ltime[x] if x==self.sheet.index.max() else beatstart[x+1] if self.sheet.at[x+1,"V"]<=0 else beatstart[x+1] - ( (self.sheet.at[x,"Lower"]/self.ntime[self.sheet.at[x,"Time"]])*0.1    )   ),self.sheet.index))
         self.sheet.insert(len(self.sheet.columns),"beatend",beatend)
 
-        #tcounter=list(map((lambda x: beatstart[x]/(self.sheet.at[x,"Bpm"]/60) ),self.sheet.index))
-        #self.sheet.insert(len(self.sheet.columns),"tcounter",tcounter)
+        tcounter=list(map((lambda x: beatstart[x]/(self.sheet.at[x,"Bpm"]/60) ),self.sheet.index))
+        self.sheet.insert(len(self.sheet.columns),"tcounter",tcounter)
 
         #converts beats into seconds
         #newt=list(map((lambda x: np.linspace(beatstart[x]/(self.sheet.at[x,"Bpm"]/60) ,beatend[x]/(self.sheet.at[x,"Bpm"]/60) ,int(self.sample_rate*(  (beatend[x]-beatstart[x])/(self.sheet.at[x,"Bpm"]/60) ) )) ) ,self.sheet.index))
