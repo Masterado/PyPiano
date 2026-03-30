@@ -5,7 +5,7 @@ import pandas as pd
 import re
 notes={
     "R": [0,0],
-    "AF":(lambda x:440*2**((x*4/7)/12))( np.arange(-22,42,21)),
+    "AF":(lambda x:440*2**((x*4/7)/12))( np.arange(-22,63,21)),
     "AN":(lambda x:440*2**((x*4/7)/12))( np.arange(-21,64,21)),
     "AS":(lambda x:440*2**((x*4/7)/12))( np.arange(-20,44,21)),
     "BF":(lambda x:440*2**((x*4/7)/12))( np.arange(-19,45,21)),
