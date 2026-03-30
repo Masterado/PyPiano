@@ -1,8 +1,7 @@
 # PyPiano
 Piano built using Python taking sheet music turned into Excel sheet as input.
 Uses pandas to store excel sheet as data that gets transformed into an audio object using simpleaudio.
-
-Currently you must edit the py file to change the excel sheet used. (Currently WA (We Are is loaded))
+Running the application opens a window that will prompt for the filename of an .xlsx file and a play button.
 
 
 
@@ -17,7 +16,7 @@ Measure: Measure number (not used. Solely for readability and testing purposes)
 Bpm: Beats per measure (used to calculate length in seconds of beats)
 Upper: Upper half of time signature (currently not used)
 Lower: Lower half of time signature (used to calculate length in seconds of beats)
-V: Denotes volume. Values 0 or less are silen.t -1 is used to denote tied notes and 0 represents rests.
+V: Denotes volume. Values 0 or less are silent -1 is used to denote tied notes and 0 represents rests.
 
 
 Current Samples
